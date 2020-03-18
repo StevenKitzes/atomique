@@ -2,10 +2,12 @@ const DEBOUNCE_DURATION         = 1000
 const DOT_COUNT                 = 50
 const DOT_SIZE_MINIMUM          = 5
 const DOT_SIZE_VARIANCE         = 5
-const HORIZONTAL_SPEED_MINIMUM  = 4000
-const HORIZONTAL_SPEED_VARIANCE = 4000
-const VERTICAL_SPEED_MINIMUM    = 4000
-const VERTICAL_SPEED_VARIANCE   = 4000
+const HORIZONTAL_SPEED_MINIMUM  = 1000
+const HORIZONTAL_SPEED_VARIANCE = 2000
+const VERTICAL_SPEED_MINIMUM    = 1000
+const VERTICAL_SPEED_VARIANCE   = 2000
+const LOWER_Z_INDEX             = -1
+const UPPER_Z_INDEX             = 1
 const CONTAINER_NAME            = 'example'
 
 const DOT_COUNT_LIGHT           = Math.floor(DOT_COUNT / 3)
@@ -20,7 +22,7 @@ if(document.readyState === 'complete') {
 
 let debouncer = null
 
-let canvas
+let canvasUpper, canvasLower
 
 function init() {
   window.addEventListener('resize', () => {
@@ -49,8 +51,12 @@ function getHostRect () {
 
 // Resets elements based on new position and size info, and returns info on new properties
 function reset() {
-  // Clear existing SVG element
-  let existing = document.getElementById(`atomique-${CONTAINER_NAME}`)
+  // Clear existing SVG elements
+  let existing = document.getElementById(`atomique-upper-${CONTAINER_NAME}`)
+  if (existing !== null) {
+    existing.parentNode.removeChild(existing)
+  }
+  existing = document.getElementById(`atomique-lower-${CONTAINER_NAME}`)
   if (existing !== null) {
     existing.parentNode.removeChild(existing)
   }
@@ -62,25 +68,43 @@ function reset() {
   let width = hostRect.width
   let height = hostRect.height
   
-  // Build up a new HTML element (div) to contain the actual effect
-  let container = document.createElement('div')
-  container.style.left = x
-  container.style.top = y
-  container.style.width = width
-  container.style.height = height
-  container.style.padding = '0'
-  container.style.position = 'fixed'
-  container.style.border = '2px solid red'
-  container.id = `atomique-${CONTAINER_NAME}`
+  // Build up new HTML elements (div) to contain the actual effect
+  let containerUpper = document.createElement('div')
+  containerUpper.style.left = x
+  containerUpper.style.top = y
+  containerUpper.style.width = width
+  containerUpper.style.height = height
+  containerUpper.style.padding = '0'
+  containerUpper.style.position = 'fixed'
+  containerUpper.style.border = '2px solid red'
+  containerUpper.style.zIndex = UPPER_Z_INDEX
+  containerUpper.id = `atomique-upper-${CONTAINER_NAME}`
+
+  let containerLower = document.createElement('div')
+  containerLower.style.left = x
+  containerLower.style.top = y
+  containerLower.style.width = width
+  containerLower.style.height = height
+  containerLower.style.padding = '0'
+  containerLower.style.position = 'fixed'
+  containerLower.style.border = '2px solid red'
+  containerLower.style.zIndex = LOWER_Z_INDEX
+  containerLower.id = `atomique-lower-${CONTAINER_NAME}`
   
-  // Append the new element to the DOM
-  document.getElementsByTagName('body')[0].appendChild(container)
+  // Append the new elements to the DOM
+  document.getElementsByTagName('body')[0].appendChild(containerUpper)
+  document.getElementsByTagName('body')[0].appendChild(containerLower)
   
-  // Create SVG canvas on the new element and finish setting it up
-  canvas = SVG()
-    .addTo(`#${container.id}`)
-  canvas.size(width, height)
-  canvas.clear()
+  // Create SVG canvases on the new element and finish setting them up
+  canvasUpper = SVG()
+    .addTo(`#${containerUpper.id}`)
+  canvasUpper.size(width, height)
+  canvasUpper.clear()
+
+  canvasLower = SVG()
+    .addTo(`#${containerLower.id}`)
+  canvasLower.size(width, height)
+  canvasLower.clear()
 
   return hostRect
 }
@@ -100,8 +124,8 @@ function run() {
 
   while(y <= height * 0.9) {
     const dotSize = Math.floor(Math.random() * DOT_SIZE_VARIANCE + DOT_SIZE_MINIMUM)
-    let r = canvas.rect(dotSize, dotSize)
-    r.addTo(canvas)
+    let r = canvasUpper.rect(dotSize, dotSize)
+    r.addTo(canvasUpper)
     r.y(y)
     rects.push(r)
     y += dotSpacing
@@ -124,16 +148,30 @@ function run() {
     r.fill(startColor)
     r.radius(r.width()/2)
     r.x(startX)
+    r.data('z-index', UPPER_Z_INDEX)
     
     // horizontal
     r.animate(Math.random() * HORIZONTAL_SPEED_VARIANCE + HORIZONTAL_SPEED_MINIMUM, 0, 'absolute')
-    .loop(times, swing)
+    .loop(1, false)
     .ease('<>')
     .attr({
       fill: endColor,
       x: endX
     })
-    .loops(Math.random() * 2)
+    .loops(Math.random())
+    .after(() => {
+      r.remove()
+      if (r.data('z-index') === UPPER_Z_INDEX) {
+        r.addTo(canvasLower)
+        r.data('z-index', LOWER_Z_INDEX)
+        subsequentAnimation(r, startColor, startX, {startColor, endColor, startX, endX})
+      }
+      else {
+        r.addTo(canvasUpper)
+        r.data('z-index', UPPER_Z_INDEX)
+        subsequentAnimation(r, endColor, endX, {startColor, endColor, startX, endX})
+      }
+    })
     
     // vertical
     r.animate(Math.random() * VERTICAL_SPEED_VARIANCE + VERTICAL_SPEED_MINIMUM, 0, 'absolute')
@@ -143,6 +181,29 @@ function run() {
       y: (Math.random() * (height * 0.8)) + (height * 0.1)
     })
     .loops(Math.random() * 2)
+  })
+}
+
+function subsequentAnimation (r, newColor, newX, generalInfo) {
+  r.animate(Math.random() * HORIZONTAL_SPEED_VARIANCE + HORIZONTAL_SPEED_MINIMUM, 0, 'absolute')
+  .loop(1, false)
+  .ease('<>')
+  .attr({
+    fill: newColor,
+    x: newX
+  })
+  .after(() => {
+    r.remove()
+    if (r.data('z-index') === UPPER_Z_INDEX) {
+      r.addTo(canvasLower)
+      r.data('z-index', LOWER_Z_INDEX)
+      subsequentAnimation(r, generalInfo.startColor, generalInfo.startX, generalInfo)
+    }
+    else {
+      r.addTo(canvasUpper)
+      r.data('z-index', UPPER_Z_INDEX)
+      subsequentAnimation(r, generalInfo.endColor, generalInfo.endX, generalInfo)
+    }
   })
 }
 
