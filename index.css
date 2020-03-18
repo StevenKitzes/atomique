@@ -1,0 +1,27 @@
+body {
+  background-color: #555;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  text-align: center;
+}
+
+a {
+  color: white;
+  font-weight: 700;
+}
+a:hover {
+  color: gold;
+}
+
+#example {
+  background-color: darkgoldenrod;
+  border: .2em solid gold;
+  border-radius: 1em;
+  font-weight: 500;
+  margin: 2em 40%;
+  overflow: visible;
+  padding: 1em;
+}
