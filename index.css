@@ -24,4 +24,5 @@ a:hover {
   margin: 2em 40%;
   overflow: visible;
   padding: 1em;
+  z-index: 5;
 }

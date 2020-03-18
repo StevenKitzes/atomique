@@ -6,23 +6,20 @@ const HORIZONTAL_SPEED_MINIMUM  = 1000
 const HORIZONTAL_SPEED_VARIANCE = 2000
 const VERTICAL_SPEED_MINIMUM    = 1000
 const VERTICAL_SPEED_VARIANCE   = 2000
-const LOWER_Z_INDEX             = -1
-const UPPER_Z_INDEX             = 1
+const LOWER_Z_INDEX             = 'LOWER_Z_INDEX'
+const UPPER_Z_INDEX             = 'UPPER_Z_INDEX'
 const CONTAINER_NAME            = 'example'
 
-const DOT_COUNT_LIGHT           = Math.floor(DOT_COUNT / 3)
+let debouncer = null
+let canvasUpper, canvasLower
 
 if(document.readyState === 'complete') {
   init()
 } else {
   window.addEventListener('load', () => {
     init()
-  })
-}
-
-let debouncer = null
-
-let canvasUpper, canvasLower
+  })  
+}  
 
 function init() {
   window.addEventListener('resize', () => {
@@ -36,16 +33,19 @@ function init() {
   run()
 }
 
-function getHostRect () {
-  let hostRect = document
-    .getElementById(CONTAINER_NAME)
-    .getBoundingClientRect()
+// Get the host element and break out some data pertaining to it
+function getHostData () {
+  let hostElement = document.getElementById(CONTAINER_NAME)
+  let hostRect = hostElement.getBoundingClientRect()
+
+  let hostZIndex = hostElement.style.zIndex
   
   return {
     x: hostRect.left - (hostRect.width * 0.2),
     y: hostRect.top - (hostRect.height * 0.25),
     width: hostRect.width * 1.4,
-    height: hostRect.height * 1.4
+    height: hostRect.height * 1.4,
+    hostZIndex
   }
 }
 
@@ -62,11 +62,12 @@ function reset() {
   }
 
   // Determine the dimensions and position of the effect host/target
-  let hostRect = getHostRect()
-  let x = hostRect.x
-  let y = hostRect.y
-  let width = hostRect.width
-  let height = hostRect.height
+  let hostData = getHostData()
+  let x = hostData.x
+  let y = hostData.y
+  let width = hostData.width
+  let height = hostData.height
+  let hostZIndex = hostData.hostZIndex
   
   // Build up new HTML elements (div) to contain the actual effect
   let containerUpper = document.createElement('div')
@@ -74,10 +75,11 @@ function reset() {
   containerUpper.style.top = y
   containerUpper.style.width = width
   containerUpper.style.height = height
+  containerUpper.style.overflow = 'visible'
   containerUpper.style.padding = '0'
+  containerUpper.style.pointerEvents = 'none'
   containerUpper.style.position = 'fixed'
-  containerUpper.style.border = '2px solid red'
-  containerUpper.style.zIndex = UPPER_Z_INDEX
+  containerUpper.style.zIndex = hostZIndex + 1
   containerUpper.id = `atomique-upper-${CONTAINER_NAME}`
 
   let containerLower = document.createElement('div')
@@ -85,10 +87,11 @@ function reset() {
   containerLower.style.top = y
   containerLower.style.width = width
   containerLower.style.height = height
+  containerLower.style.overflow = 'visible'
   containerLower.style.padding = '0'
+  containerLower.style.pointerEvents = 'none'
   containerLower.style.position = 'fixed'
-  containerLower.style.border = '2px solid red'
-  containerLower.style.zIndex = LOWER_Z_INDEX
+  containerLower.style.zIndex = hostZIndex - 1
   containerLower.id = `atomique-lower-${CONTAINER_NAME}`
   
   // Append the new elements to the DOM
@@ -99,14 +102,16 @@ function reset() {
   canvasUpper = SVG()
     .addTo(`#${containerUpper.id}`)
   canvasUpper.size(width, height)
+  canvasUpper.css('overflow', 'visible')
   canvasUpper.clear()
 
   canvasLower = SVG()
     .addTo(`#${containerLower.id}`)
   canvasLower.size(width, height)
+  canvasLower.css('overflow', 'visible')
   canvasLower.clear()
 
-  return hostRect
+  return hostData
 }
 
 function run() {
@@ -128,7 +133,7 @@ function run() {
     r.addTo(canvasUpper)
     r.y(y)
     rects.push(r)
-    y += dotSpacing
+    y += dotSpacing * 2
   }
 
   rects.forEach(r => {
