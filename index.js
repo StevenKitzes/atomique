@@ -156,40 +156,20 @@ function run() {
     r.data('z-index', UPPER_Z_INDEX)
     
     // horizontal
-    r.animate(Math.random() * HORIZONTAL_SPEED_VARIANCE + HORIZONTAL_SPEED_MINIMUM, 0, 'absolute')
-    .loop(1, false)
-    .ease('<>')
-    .attr({
-      fill: endColor,
-      x: endX
-    })
-    .loops(Math.random())
-    .after(() => {
-      r.remove()
-      if (r.data('z-index') === UPPER_Z_INDEX) {
-        r.addTo(canvasLower)
-        r.data('z-index', LOWER_Z_INDEX)
-        subsequentAnimation(r, startColor, startX, {startColor, endColor, startX, endX})
-      }
-      else {
-        r.addTo(canvasUpper)
-        r.data('z-index', UPPER_Z_INDEX)
-        subsequentAnimation(r, endColor, endX, {startColor, endColor, startX, endX})
-      }
-    })
+    recurseHorizontalAnimation(r, endColor, endX, {startColor, endColor, startX, endX}, true)
     
     // vertical
     r.animate(Math.random() * VERTICAL_SPEED_VARIANCE + VERTICAL_SPEED_MINIMUM, 0, 'absolute')
     .loop(times, swing)
     .ease('<>')
     .attr({
-      y: (Math.random() * (height * 0.8)) + (height * 0.1)
+      y: (Math.random() * (height * 0.8) - r.height()) + (height * 0.1)
     })
     .loops(Math.random() * 2)
   })
 }
 
-function subsequentAnimation (r, newColor, newX, generalInfo) {
+function recurseHorizontalAnimation (r, newColor, newX, generalInfo, headStart) {
   r.animate(Math.random() * HORIZONTAL_SPEED_VARIANCE + HORIZONTAL_SPEED_MINIMUM, 0, 'absolute')
   .loop(1, false)
   .ease('<>')
@@ -197,17 +177,18 @@ function subsequentAnimation (r, newColor, newX, generalInfo) {
     fill: newColor,
     x: newX
   })
+  .loops(headStart ? Math.random() : 0)
   .after(() => {
     r.remove()
     if (r.data('z-index') === UPPER_Z_INDEX) {
       r.addTo(canvasLower)
       r.data('z-index', LOWER_Z_INDEX)
-      subsequentAnimation(r, generalInfo.startColor, generalInfo.startX, generalInfo)
+      recurseHorizontalAnimation(r, generalInfo.startColor, generalInfo.startX, generalInfo)
     }
     else {
       r.addTo(canvasUpper)
       r.data('z-index', UPPER_Z_INDEX)
-      subsequentAnimation(r, generalInfo.endColor, generalInfo.endX, generalInfo)
+      recurseHorizontalAnimation(r, generalInfo.endColor, generalInfo.endX, generalInfo)
     }
   })
 }
