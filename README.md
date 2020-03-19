@@ -6,7 +6,7 @@ A configurable visual effect for HTML elements.
 
 Currently, this is a bare-bones JavaScript library that you can include on your HTML page using `<script>` tags.  For the moment, you will also need to include the [SVG.js](https://svgjs.com/) `svg.min.js` file included in this repository as an additional dependency.
 
-Included in this repository is a sample HTML page demonstrating the most basic way to accomplish this.  Refer to `index.html` as a guide, and see it in action [here](https://stevenkitzes.github.com/atomique).
+Included in this repository is a sample HTML page demonstrating the most basic way to get Atomique working on your page.  Refer to `index.html` as a guide, and see it in action [here](https://stevenkitzes.github.com/atomique).
 
 The following snippet will get you started.  This will include the required files on your page, and start the Atomique effect.  By default, the effect will be applied to the element on your page with the `id` attribute "example".
 
@@ -18,6 +18,8 @@ The following snippet will get you started.  This will include the required file
         atomique()
       })
     </script>
+
+Atomique is capable of being applied to multiple elements with unique `id` attributes, and each Atomique effect can have its own configuration!  **Be warned**, though: SVG animation is taxing on browsers, so large numbers of particles are likely to impact performance noticeably. 
 
 ## Configurability
 The `atomique()` command gets the effect started with a bunch of defaults.  But many of the effect's properties are configurable, such as the speed, size, and color of the moving particles.  All properties are configured by passing an object to the `atomique()` command with property names and values.  As simple example, you can change the number of particles in orbit like this:
@@ -127,6 +129,7 @@ I accidentally created a feature at some point that ensures all particles are th
 
 - More configurability (size of orbit relative to host)
 - More than two colors...?
+- Live configurability
 - Package for `npm` deployability
 
 Play around and see what you come up with, and shoot me any ideas.  I've come up with some excessively neat effects by goofing around with color uniformity and invariable animation durations, in particular.
