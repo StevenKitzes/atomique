@@ -27,17 +27,18 @@ function atomique (opts = {}) {
 
   const COLOR_UNIFORMITY             = opts.colorUniformity || false
 
-  console.log(`Got HOST_ELEMENT_ID              ${HOST_ELEMENT_ID}`)
-  console.log(`Got COLOR_A                      ${COLOR_A}`)
-  console.log(`Got COLOR_B                      ${COLOR_B}`)
-  console.log(`Got DOT_COUNT                    ${DOT_COUNT}`)
-  console.log(`Got DOT_SIZE_MINIMUM             ${DOT_SIZE_MINIMUM}`)
-  console.log(`Got DOT_SIZE_VARIANCE            ${DOT_SIZE_VARIANCE}`)
-  console.log(`Got HORIZONTAL_DURATION_MINIMUM  ${HORIZONTAL_DURATION_MINIMUM}`)
-  console.log(`Got HORIZONTAL_VARIANCE          ${HORIZONTAL_VARIANCE}`)
-  console.log(`Got VERTICAL_DURATION_MINIMUM    ${VERTICAL_DURATION_MINIMUM}`)
-  console.log(`Got VERTICAL_VARIANCE            ${VERTICAL_VARIANCE}`)
-  console.log(`Got LEFT_RIGHT_COLOR_MODE        ${COLOR_UNIFORMITY}`)
+  // Kept under comment for troubleshooting purposes
+  // console.log(`Got HOST_ELEMENT_ID              ${HOST_ELEMENT_ID}`)
+  // console.log(`Got COLOR_A                      ${COLOR_A}`)
+  // console.log(`Got COLOR_B                      ${COLOR_B}`)
+  // console.log(`Got DOT_COUNT                    ${DOT_COUNT}`)
+  // console.log(`Got DOT_SIZE_MINIMUM             ${DOT_SIZE_MINIMUM}`)
+  // console.log(`Got DOT_SIZE_VARIANCE            ${DOT_SIZE_VARIANCE}`)
+  // console.log(`Got HORIZONTAL_DURATION_MINIMUM  ${HORIZONTAL_DURATION_MINIMUM}`)
+  // console.log(`Got HORIZONTAL_VARIANCE          ${HORIZONTAL_VARIANCE}`)
+  // console.log(`Got VERTICAL_DURATION_MINIMUM    ${VERTICAL_DURATION_MINIMUM}`)
+  // console.log(`Got VERTICAL_VARIANCE            ${VERTICAL_VARIANCE}`)
+  // console.log(`Got LEFT_RIGHT_COLOR_MODE        ${COLOR_UNIFORMITY}`)
 
   let debouncer = null
   let canvasUpper, canvasLower
@@ -67,6 +68,10 @@ function atomique (opts = {}) {
   // Get the host element and break out some data pertaining to it
   function getHostData () {
     let hostElement = document.getElementById(HOST_ELEMENT_ID)
+    if (hostElement === null) {
+      console.error(`Error: Atomique could not find a suitable host element with the name: '${HOST_ELEMENT_ID}'.`)
+      return null
+    }
     let hostRect = hostElement.getBoundingClientRect()
 
     let hostZIndex = hostElement.style.zIndex
@@ -94,6 +99,7 @@ function atomique (opts = {}) {
 
     // Determine the dimensions and position of the effect host/target
     let hostData = getHostData()
+    if (hostData === null) return null
     let x = hostData.x
     let y = hostData.y
     let width = hostData.width
@@ -152,6 +158,7 @@ function atomique (opts = {}) {
     if(debouncer) return
     
     let hostRect = reset()
+    if (hostRect === null) return null
     let height = hostRect.height
     
     const dotSpacing = (height / DOT_COUNT)
