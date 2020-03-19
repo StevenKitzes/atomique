@@ -4,7 +4,7 @@ A configurable visual effect for HTML elements.
 
 ## Getting Started
 
-Currently, this is a bare-bones JavaScript library that you can include on your HTML page using `<script>` tags.  For the moment, you will also need to include the [SVG.js](https://svgjs.com/) `svg.min.js` file included in this repository as an additional dependency.
+Currently, this is a bare-bones JavaScript library that you can include on your HTML page using `<script>` tags.  For the moment, you will also need to include the [SVG.js](https://svgjs.com/) `svg.min.js` file included in this repository as an additional dependency.  `svg.min.js` and `atomique.js` are all you need to get started.
 
 Included in this repository is a sample HTML page demonstrating the most basic way to get Atomique working on your page.  Refer to `index.html` as a guide, and see it in action [here](https://stevenkitzes.github.com/atomique).
 
@@ -12,7 +12,7 @@ The following snippet will get you started.  This will include the required file
 
     <div id='example'>This div gets the effect.</div>
     <script src='svg.min.js'></script>
-    <script src='index.js'></script>
+    <script src='atomique.js'></script>
     <script type='text/javascript'>
       window.addEventListener('load', () => {
         atomique()
