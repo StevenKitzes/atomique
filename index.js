@@ -8,9 +8,9 @@ function atomique (opts = {}) {
   const DOT_SIZE_MINIMUM          = opts.minDotSize || 5
   const DOT_SIZE_VARIANCE         = opts.dotSizeVariance || 5
   const HORIZONTAL_SPEED_MINIMUM  = opts.minHorizontalSpeed * 1000 || 1000
-  const HORIZONTAL_SPEED_VARIANCE = opts.speedVariance * 1000 || 2000
+  const HORIZONTAL_SPEED_VARIANCE = opts.horizontalSpeedVariance * 1000 || 2000
   const VERTICAL_SPEED_MINIMUM    = opts.minVerticalSpeed * 1000 || 1000
-  const VERTICAL_SPEED_VARIANCE   = opts.speedVariance * 1000 || 2000
+  const VERTICAL_SPEED_VARIANCE   = opts.verticalSpeedVariance * 1000 || 2000
   const COLOR_A                   = opts.colorA || '#fff'
   const COLOR_B                   = opts.colorB || '#000'
   const HOST_ELEMENT_NAME         = opts.hostElementName || 'example'
@@ -173,7 +173,7 @@ function atomique (opts = {}) {
       r.radius(r.width()/2)
       r.x(startX)
       r.data('z-index', UPPER_Z_INDEX)
-      r.data('currentRightMost', rightMostX)
+      r.data('currentRightMost', rightMostX) // TODO: use current time instead
       
       // horizontal
       recurseHorizontalAnimation(r, startColor === COLOR_A ? COLOR_B : COLOR_A, endX, {colorA: COLOR_A, colorB: COLOR_B, startX, endX}, true)
