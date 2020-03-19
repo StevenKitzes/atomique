@@ -4,17 +4,27 @@
     <link rel="stylesheet" type="text/css" href="index.css"> 
   </head>
   <body>
-    <h1>Atomique</h1>
-    <h3>A visual effect resembling atomic particles orbiting a nucleus</h3>
-    <h6>Concept by Steven Kitzes</h6>
+    <h1 class='centered-line'>Atomique&nbsp;<a href="https://github.com/stevenkitzes/atomique"><img src='github-light.png'></a></h1>
+    <h3>A configurable visual effect resembling particles orbiting a nucleus</h3>
+    <h4 class='centered-line'>Concept by Steven Kitzes&nbsp;
+      <a href="https://github.com/stevenkitzes"><img src='github-light.png'></a>&nbsp;
+      <a href="https://twitter.com/tknkldfklty"><img src='twitter-light.png'></a>
+    </h4>
     <div id='example'>Example</div>
-    <p><strong>Note:</strong> this project depends strongly on <a href="https://svgjs.com">SVG.js</a>.</p>
+    <p><strong>Note:</strong> this project made possible by <a href="https://svgjs.com">SVG.js</a>.</p>
     <script src='svg.min.js'></script>
     <script src='index.js'></script>
     <script type='text/javascript'>
       window.addEventListener('load', () => {
-        atomique()
-      })  
+        atomique({
+          minHorizontalDuration: 2,
+          horizontalVariance: 0,
+          minVerticalDuration: 'llama',
+          verticalVariance: 2,
+          colorUniformity: true,
+          dotCount: 100
+        })
+      })
     </script>
   </body>
 </html>

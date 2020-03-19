@@ -1,32 +1,43 @@
 function atomique (opts = {}) {
-  const DEBOUNCE_DURATION         = 1000
-  const LOWER_Z_INDEX             = 'LOWER_Z_INDEX'
-  const UPPER_Z_INDEX             = 'UPPER_Z_INDEX'
-  const LATEST_RESET              = 'LATEST_RESET'
+  const DEBOUNCE_DURATION            = 1000
+  const LOWER_Z_INDEX                = 'LOWER_Z_INDEX'
+  const UPPER_Z_INDEX                = 'UPPER_Z_INDEX'
+  const LATEST_RESET                 = 'LATEST_RESET'
+   
+  const HOST_ELEMENT_NAME            = opts.hostElementName || 'example'
 
-  const LEFT_RIGHT_COLOR_MODE     = opts.leftRightColorMode || false
-  const DOT_COUNT                 = opts.dotCount || 10
-  const DOT_SIZE_MINIMUM          = opts.minDotSize || 5
-  const DOT_SIZE_VARIANCE         = opts.dotSizeVariance || 5
-  const HORIZONTAL_SPEED_MINIMUM  = opts.minHorizontalSpeed * 1000 || 1000
-  const HORIZONTAL_SPEED_VARIANCE = opts.horizontalSpeedVariance * 1000 || 2000
-  const VERTICAL_SPEED_MINIMUM    = opts.minVerticalSpeed * 1000 || 1000
-  const VERTICAL_SPEED_VARIANCE   = opts.verticalSpeedVariance * 1000 || 2000
-  const COLOR_A                   = opts.colorA || '#fff'
-  const COLOR_B                   = opts.colorB || '#000'
-  const HOST_ELEMENT_NAME         = opts.hostElementName || 'example'
+  const COLOR_A                      = opts.colorA || '#fff'
+  const COLOR_B                      = opts.colorB || '#000'
 
-  console.log(`Got LEFT_RIGHT_COLOR_MODE     ${LEFT_RIGHT_COLOR_MODE}`)
-  console.log(`Got DOT_COUNT                 ${DOT_COUNT}`)
-  console.log(`Got DOT_SIZE_MINIMUM          ${DOT_SIZE_MINIMUM}`)
-  console.log(`Got DOT_SIZE_VARIANCE         ${DOT_SIZE_VARIANCE}`)
-  console.log(`Got HORIZONTAL_SPEED_MINIMUM  ${HORIZONTAL_SPEED_MINIMUM}`)
-  console.log(`Got HORIZONTAL_SPEED_VARIANCE ${HORIZONTAL_SPEED_VARIANCE}`)
-  console.log(`Got VERTICAL_SPEED_MINIMUM    ${VERTICAL_SPEED_MINIMUM}`)
-  console.log(`Got VERTICAL_SPEED_VARIANCE   ${VERTICAL_SPEED_VARIANCE}`)
-  console.log(`Got COLOR_A                   ${COLOR_A}`)
-  console.log(`Got COLOR_B                   ${COLOR_B}`)
-  console.log(`Got HOST_ELEMENT_NAME         ${HOST_ELEMENT_NAME}`)
+  const DOT_COUNT                    = opts.dotCount || 10
+
+  const DOT_SIZE_MINIMUM             = opts.minDotSize || 5
+  const DOT_SIZE_MAXIMUM             = opts.maxDotSize || 10
+  const DOT_SIZE_VARIANCE            = DOT_SIZE_MAXIMUM - DOT_SIZE_MINIMUM
+
+  const H_DURATION                   = opts.minHorizontalDuration * 1000
+  const HORIZONTAL_DURATION_MINIMUM  = Number.isNaN(H_DURATION) ? 1000 : H_DURATION
+  const H_VARIANCE                   = opts.horizontalVariance * 1000
+  const HORIZONTAL_VARIANCE          = Number.isNaN(H_VARIANCE) ? 2000 : H_VARIANCE
+
+  const V_DURATION                   = opts.minVerticalDuration * 1000
+  const VERTICAL_DURATION_MINIMUM    = Number.isNaN(V_DURATION) ? 1000 : V_DURATION
+  const V_VARIANCE                   = opts.verticalVariance * 1000
+  const VERTICAL_VARIANCE            = Number.isNaN(V_VARIANCE) ? 2000 : V_VARIANCE
+
+  const COLOR_UNIFORMITY             = opts.colorUniformity || false
+
+  console.log(`Got HOST_ELEMENT_NAME            ${HOST_ELEMENT_NAME}`)
+  console.log(`Got COLOR_A                      ${COLOR_A}`)
+  console.log(`Got COLOR_B                      ${COLOR_B}`)
+  console.log(`Got DOT_COUNT                    ${DOT_COUNT}`)
+  console.log(`Got DOT_SIZE_MINIMUM             ${DOT_SIZE_MINIMUM}`)
+  console.log(`Got DOT_SIZE_VARIANCE            ${DOT_SIZE_VARIANCE}`)
+  console.log(`Got HORIZONTAL_DURATION_MINIMUM  ${HORIZONTAL_DURATION_MINIMUM}`)
+  console.log(`Got HORIZONTAL_VARIANCE          ${HORIZONTAL_VARIANCE}`)
+  console.log(`Got VERTICAL_DURATION_MINIMUM    ${VERTICAL_DURATION_MINIMUM}`)
+  console.log(`Got VERTICAL_VARIANCE            ${VERTICAL_VARIANCE}`)
+  console.log(`Got LEFT_RIGHT_COLOR_MODE        ${COLOR_UNIFORMITY}`)
 
   let debouncer = null
   let canvasUpper, canvasLower
@@ -169,7 +180,7 @@ function atomique (opts = {}) {
       let times = Infinity
       let swing = true
 
-      if (LEFT_RIGHT_COLOR_MODE) startColor = lor ? COLOR_A : COLOR_B
+      if (COLOR_UNIFORMITY) startColor = lor ? COLOR_A : COLOR_B
       else startColor = coinToss() ? COLOR_A : COLOR_B
       r.fill(startColor)
       r.radius(r.width()/2)
@@ -181,7 +192,7 @@ function atomique (opts = {}) {
       recurseHorizontalAnimation(r, startColor === COLOR_A ? COLOR_B : COLOR_A, endX, {colorA: COLOR_A, colorB: COLOR_B, startX, endX}, true)
       
       // vertical
-      r.animate(Math.random() * VERTICAL_SPEED_VARIANCE + VERTICAL_SPEED_MINIMUM, 0, 'absolute')
+      r.animate(Math.random() * VERTICAL_VARIANCE + VERTICAL_DURATION_MINIMUM, 0, 'absolute')
       .loop(times, swing)
       .ease('<>')
       .attr({
@@ -192,7 +203,7 @@ function atomique (opts = {}) {
   }
 
   function recurseHorizontalAnimation (r, newColor, newX, generalInfo, headStart) {
-    r.animate(Math.random() * HORIZONTAL_SPEED_VARIANCE + HORIZONTAL_SPEED_MINIMUM, 0, 'absolute')
+    r.animate(Math.random() * HORIZONTAL_VARIANCE + HORIZONTAL_DURATION_MINIMUM, 0, 'absolute')
     .loop(1, false)
     .ease('<>')
     .attr({

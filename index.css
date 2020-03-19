@@ -4,8 +4,12 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   overflow: hidden;
-  padding: 0;
+  padding: 2em 0 0 0;
   text-align: center;
+}
+
+img {
+  height: 1em;
 }
 
 a {
@@ -25,4 +29,11 @@ a:hover {
   overflow: visible;
   padding: 1em;
   z-index: 5;
+}
+
+.centered-line {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width:100%;
 }
