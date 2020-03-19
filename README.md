@@ -22,7 +22,7 @@ The following snippet will get you started.  This will include the required file
 Atomique is capable of being applied to multiple elements with unique `id` attributes, and each Atomique effect can have its own configuration!  **Be warned**, though: SVG animation is taxing on browsers, so large numbers of particles are likely to impact performance noticeably. 
 
 ## Configurability
-The `atomique()` command gets the effect started with a bunch of defaults.  But many of the effect's properties are configurable, such as the speed, size, and color of the moving particles.  All properties are configured by passing an object to the `atomique()` command with property names and values.  As simple example, you can change the number of particles in orbit like this:
+The `atomique()` command gets the effect started with a bunch of defaults.  But many of the effect's properties are configurable, such as the speed, size, and color of the moving particles.  All properties are configured by passing an object to the `atomique()` command with property names and values.  As a simple example, you can change the number of particles in orbit like this:
 
     atomique({ dotCount: 5 })
 
@@ -30,15 +30,15 @@ You can, of course, include one or more properties in this way.  Atomique doesn'
 
 Let's look at all the things you can do with the Atomique effect.
 
-### Host Element Name
+### Host Element ID
 
-    { hostElementName: String }
+    { hostElementId: String }
     
-Specify the element you want to host the effect by passing the element's `id` attribute to the `hostElementName` property, like this:
+Specify the element you want to host the effect by passing the element's `id` attribute to the `hostElementId` property, like this:
 
-    atomique({ hostElementName: 'myElement' })
+    atomique({ hostElementId: 'myElement' })
 
-Note that Atomique does *not* expect a selector; it only works on a single element by its `id`, so just pass the `id` as a string.
+Note that Atomique does *not* expect a selector; it only works on a single element by its `id`, so just pass the `id` as a string without the `#` symbol.
 
 ### Colors
 
@@ -69,14 +69,14 @@ And because I can't resist the hilarity, an example that your browser will never
     { minDotSize: Number }
     { maxDotSize: Number }
 
-You can choose to make all particles the same size, or have them vary.  This is accomplished using the `minDotSize` and `maxDotSize` options.  You can, of course, use the same value for both, resulting in a single, consistent particle size.  I prefer a slight variability:
+You can choose to make all particles the same size, or have them vary.  This is accomplished using the `minDotSize` and `maxDotSize` options.  You can, of course, use the same value for both, resulting in a single, consistent particle size.  You may prefer a slight variability:
 
     atomique({
       minDotSize: 5,
       maxDotSize: 10
     })
 
-I don't do any validation, so you can do wacky stuff like negative sizes (which work), or gigantic sizes (which can give you some surprisingly fun results on larger host elements).
+Atomique doesn't do any validation, so you can do wacky stuff like negative sizes (which work), or gigantic sizes (which can give you some surprisingly fun results on larger host elements).
 
 It's worth noting that larger particles will get some strange clipping and popping effects as they overlap each other and the host element, mainly when transitioning from in front to behind the host element (and vice versa).
 
@@ -115,7 +115,7 @@ In this case, vertical animations up-to-down or down-to-up will always take 1 se
 
 **Note** that horizontal and vertical animations are broken up, and are considered separately in the Atomique effect.  This adds to the randomness and is by design, but as you can see, you can be clever with customization to reach your own result.
 
-Atomique accepts stupid stuff like negative durations.  The result is ... not great, but in case you like it, I've allowed it.
+Atomique accepts stupid stuff like negative durations.  The result is ... not great, but in case you like it, Atomique allows it.
 
 ### Left-Right Color Uniformity
 

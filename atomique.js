@@ -4,7 +4,7 @@ function atomique (opts = {}) {
   const UPPER_Z_INDEX                = 'UPPER_Z_INDEX'
   const LATEST_RESET                 = 'LATEST_RESET'
    
-  const HOST_ELEMENT_NAME            = opts.hostElementName || 'example'
+  const HOST_ELEMENT_ID              = opts.hostElementId || 'example'
 
   const COLOR_A                      = opts.colorA || '#fff'
   const COLOR_B                      = opts.colorB || '#000'
@@ -27,7 +27,7 @@ function atomique (opts = {}) {
 
   const COLOR_UNIFORMITY             = opts.colorUniformity || false
 
-  console.log(`Got HOST_ELEMENT_NAME            ${HOST_ELEMENT_NAME}`)
+  console.log(`Got HOST_ELEMENT_ID              ${HOST_ELEMENT_ID}`)
   console.log(`Got COLOR_A                      ${COLOR_A}`)
   console.log(`Got COLOR_B                      ${COLOR_B}`)
   console.log(`Got DOT_COUNT                    ${DOT_COUNT}`)
@@ -66,7 +66,7 @@ function atomique (opts = {}) {
 
   // Get the host element and break out some data pertaining to it
   function getHostData () {
-    let hostElement = document.getElementById(HOST_ELEMENT_NAME)
+    let hostElement = document.getElementById(HOST_ELEMENT_ID)
     let hostRect = hostElement.getBoundingClientRect()
 
     let hostZIndex = hostElement.style.zIndex
@@ -83,11 +83,11 @@ function atomique (opts = {}) {
   // Resets elements based on new position and size info, and returns info on new properties
   function reset() {
     // Clear existing SVG elements
-    let existing = document.getElementById(`atomique-upper-${HOST_ELEMENT_NAME}`)
+    let existing = document.getElementById(`atomique-upper-${HOST_ELEMENT_ID}`)
     if (existing !== null) {
       existing.parentNode.removeChild(existing)
     }
-    existing = document.getElementById(`atomique-lower-${HOST_ELEMENT_NAME}`)
+    existing = document.getElementById(`atomique-lower-${HOST_ELEMENT_ID}`)
     if (existing !== null) {
       existing.parentNode.removeChild(existing)
     }
@@ -114,7 +114,7 @@ function atomique (opts = {}) {
     containerUpper.style.pointerEvents = 'none'
     containerUpper.style.position = 'fixed'
     containerUpper.style.zIndex = hostZIndex + 1
-    containerUpper.id = `atomique-upper-${HOST_ELEMENT_NAME}`
+    containerUpper.id = `atomique-upper-${HOST_ELEMENT_ID}`
 
     let containerLower = document.createElement('div')
     containerLower.style.left = x
@@ -126,7 +126,7 @@ function atomique (opts = {}) {
     containerLower.style.pointerEvents = 'none'
     containerLower.style.position = 'fixed'
     containerLower.style.zIndex = hostZIndex - 1
-    containerLower.id = `atomique-lower-${HOST_ELEMENT_NAME}`
+    containerLower.id = `atomique-lower-${HOST_ELEMENT_ID}`
     
     // Append the new elements to the DOM
     document.getElementsByTagName('body')[0].appendChild(containerUpper)
