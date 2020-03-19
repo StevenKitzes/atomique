@@ -2,6 +2,7 @@ function atomique (opts = {}) {
   const DEBOUNCE_DURATION         = 1000
   const LOWER_Z_INDEX             = 'LOWER_Z_INDEX'
   const UPPER_Z_INDEX             = 'UPPER_Z_INDEX'
+  const LATEST_RESET              = 'LATEST_RESET'
 
   const LEFT_RIGHT_COLOR_MODE     = opts.leftRightColorMode || false
   const DOT_COUNT                 = opts.dotCount || 10
@@ -30,6 +31,7 @@ function atomique (opts = {}) {
   let debouncer = null
   let canvasUpper, canvasLower
   let rightMostX
+  let latestReset
 
   if(document.readyState === 'complete') {
     init()
@@ -88,6 +90,7 @@ function atomique (opts = {}) {
     let hostZIndex = hostData.hostZIndex
 
     rightMostX = width - (DOT_SIZE_MINIMUM + DOT_SIZE_VARIANCE)
+    latestReset = new Date().getTime() / 1000
     
     // Build up new HTML elements (div) to contain the actual effect
     let containerUpper = document.createElement('div')
@@ -138,7 +141,6 @@ function atomique (opts = {}) {
     if(debouncer) return
     
     let hostRect = reset()
-    let width = hostRect.width
     let height = hostRect.height
     
     const dotSpacing = (height / DOT_COUNT)
@@ -173,7 +175,7 @@ function atomique (opts = {}) {
       r.radius(r.width()/2)
       r.x(startX)
       r.data('z-index', UPPER_Z_INDEX)
-      r.data('currentRightMost', rightMostX) // TODO: use current time instead
+      r.data(LATEST_RESET, latestReset)
       
       // horizontal
       recurseHorizontalAnimation(r, startColor === COLOR_A ? COLOR_B : COLOR_A, endX, {colorA: COLOR_A, colorB: COLOR_B, startX, endX}, true)
@@ -199,7 +201,7 @@ function atomique (opts = {}) {
     })
     .loops(headStart ? Math.random() : 0)
     .after(() => {
-      if (r.data('currentRightMost') !== rightMostX) {
+      if (r.data(LATEST_RESET) !== latestReset) {
         r.remove()
         return
       }
