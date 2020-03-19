@@ -1,6 +1,6 @@
 
 # Atomique
-A configurable visual effect for HTML elements.
+*ah-toe-MEEK -* A configurable visual effect resembling sub-atomic particles orbiting a nucleus
 
 ## Getting Started
 
