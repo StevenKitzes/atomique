@@ -1,6 +1,6 @@
 body {
-  background-color: #555;
-  color: white;
+  background-color: #fff;
+  color: #000;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   overflow: hidden;
@@ -13,18 +13,19 @@ img {
 }
 
 a {
-  color: white;
+  color: #0ae;
   font-weight: 700;
 }
 a:hover {
-  color: gold;
+  color: #000;
 }
 
 #example {
-  background-color: darkgoldenrod;
-  border: .2em solid gold;
+  background-color: #eee;
+  border: .2em solid #888;
   border-radius: 1em;
-  font-weight: 500;
+  color: #000;
+  font-weight: 900;
   margin: 2em 40%;
   overflow: visible;
   padding: 1em;

@@ -4,19 +4,22 @@
     <link rel="stylesheet" type="text/css" href="index.css"> 
   </head>
   <body>
-    <h1 class='centered-line'>Atomique&nbsp;<a href="https://github.com/stevenkitzes/atomique"><img src='github-light.png'></a></h1>
+    <h1 class='centered-line'>Atomique&nbsp;<a href="https://github.com/stevenkitzes/atomique"><img src='github-blue.png'></a></h1>
     <h3><em style="font-weight:100">ah-toe-MEEK - </em>A configurable visual effect resembling sub-atomic particles orbiting a nucleus</h3>
-    <h4 class='centered-line'>from Steven Kitzes&nbsp;
-      <a href="https://github.com/stevenkitzes"><img src='github-light.png'></a>&nbsp;
-      <a href="https://twitter.com/tknkldfklty"><img src='twitter-light.png'></a>
-    </h4>
+    <p class='centered-line'>by Steven Kitzes&nbsp;
+      <a href="https://github.com/stevenkitzes"><img src='github-blue.png'></a>&nbsp;
+      <a href="https://twitter.com/tknkldfklty"><img src='twitter-blue.png'></a>
+    </p>
     <div id='example'>Example</div>
-    <p><strong>Note:</strong> this project made possible by <a href="https://svgjs.com">SVG.js</a>.</p>
+    <p>Made possible by <a href="https://svgjs.com">SVG.js</a>.</p>
     <script src='svg.min.js'></script>
     <script src='atomique.js'></script>
     <script type='text/javascript'>
       window.addEventListener('load', () => {
-        atomique()
+        atomique({
+          colorA: "#0ae",
+          colorB: "#000"
+        })
       })
     </script>
   </body>
