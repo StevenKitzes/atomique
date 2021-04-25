@@ -128,8 +128,9 @@ I accidentally created a feature at some point that ensures all particles are th
 ## Ideas for Improvement
 
 - More configurability (size of orbit relative to host)
+- Configurable z-index of particles
 - More than two colors...?
-- Live configurability
+- Live configurability demo
 - Package for `npm` deployability
 
 Play around and see what you come up with, and shoot me any ideas.  I've come up with some excessively neat effects by goofing around with color uniformity and invariable animation durations, in particular.
