@@ -1,9 +1,11 @@
 function atomique (opts = {}) {
-  const DEBOUNCE_DURATION            = 1000
+  const DEBUG                        = opts.debug || false
+
+  const DEBOUNCE_DURATION            = opts.debounceTime || 250
   const LOWER_Z_INDEX                = 'LOWER_Z_INDEX'
   const UPPER_Z_INDEX                = 'UPPER_Z_INDEX'
   const LATEST_RESET                 = 'LATEST_RESET'
-   
+
   const HOST_ELEMENT_ID              = opts.hostElementId || 'example'
 
   const COLOR_A                      = opts.colorA || '#fff'
@@ -27,23 +29,39 @@ function atomique (opts = {}) {
 
   const COLOR_UNIFORMITY             = opts.colorUniformity || false
 
-  // Kept under comment for troubleshooting purposes
-  // console.log(`Got HOST_ELEMENT_ID              ${HOST_ELEMENT_ID}`)
-  // console.log(`Got COLOR_A                      ${COLOR_A}`)
-  // console.log(`Got COLOR_B                      ${COLOR_B}`)
-  // console.log(`Got DOT_COUNT                    ${DOT_COUNT}`)
-  // console.log(`Got DOT_SIZE_MINIMUM             ${DOT_SIZE_MINIMUM}`)
-  // console.log(`Got DOT_SIZE_VARIANCE            ${DOT_SIZE_VARIANCE}`)
-  // console.log(`Got HORIZONTAL_DURATION_MINIMUM  ${HORIZONTAL_DURATION_MINIMUM}`)
-  // console.log(`Got HORIZONTAL_VARIANCE          ${HORIZONTAL_VARIANCE}`)
-  // console.log(`Got VERTICAL_DURATION_MINIMUM    ${VERTICAL_DURATION_MINIMUM}`)
-  // console.log(`Got VERTICAL_VARIANCE            ${VERTICAL_VARIANCE}`)
-  // console.log(`Got LEFT_RIGHT_COLOR_MODE        ${COLOR_UNIFORMITY}`)
-
   let debouncer = null
   let canvasUpper, canvasLower
   let rightMostX
   let latestReset
+
+  function atomique_log(msg) {
+    if (DEBUG) {
+      console.log(`[Atomique debug] ${msg}`)
+    }
+  }
+
+  // Report calculated startup
+  atomique_log(`Got DEBUG                        ${DEBUG}`)
+  atomique_log(`Got HOST_ELEMENT_ID              ${HOST_ELEMENT_ID}`)
+  atomique_log(`Got DEBOUNCE_DURATION            ${DEBOUNCE_DURATION}`)
+  atomique_log(`Got LOWER_Z_INDEX                ${LOWER_Z_INDEX}`)
+  atomique_log(`Got UPPER_Z_INDEX                ${UPPER_Z_INDEX}`)
+  atomique_log(`Got LATEST_RESET                 ${LATEST_RESET}`)
+  atomique_log(`Got COLOR_A                      ${COLOR_A}`)
+  atomique_log(`Got COLOR_B                      ${COLOR_B}`)
+  atomique_log(`Got DOT_COUNT                    ${DOT_COUNT}`)
+  atomique_log(`Got DOT_SIZE_MINIMUM             ${DOT_SIZE_MINIMUM}`)
+  atomique_log(`Got DOT_SIZE_MAXIMUM             ${DOT_SIZE_MAXIMUM}`)
+  atomique_log(`Got DOT_SIZE_VARIANCE            ${DOT_SIZE_VARIANCE}`)
+  atomique_log(`Got H_DURATION                   ${H_DURATION}`)
+  atomique_log(`Got HORIZONTAL_DURATION_MINIMUM  ${HORIZONTAL_DURATION_MINIMUM}`)
+  atomique_log(`Got H_VARIANCE                   ${H_VARIANCE}`)
+  atomique_log(`Got HORIZONTAL_VARIANCE          ${HORIZONTAL_VARIANCE}`)
+  atomique_log(`Got V_DURATION                   ${V_DURATION}`)
+  atomique_log(`Got VERTICAL_DURATION_MINIMUM    ${VERTICAL_DURATION_MINIMUM}`)
+  atomique_log(`Got V_VARIANCE                   ${V_VARIANCE}`)
+  atomique_log(`Got VERTICAL_VARIANCE            ${VERTICAL_VARIANCE}`)
+  atomique_log(`Got COLOR_UNIFORMITY             ${COLOR_UNIFORMITY}`)
 
   if(document.readyState === 'complete') {
     init()
@@ -51,16 +69,20 @@ function atomique (opts = {}) {
     window.addEventListener('load', () => {
       init()
     })  
-  }  
+  }
+
+  function debounceHandler() {
+    if(debouncer) return
+    debouncer = setTimeout(() => {
+      debouncer = null
+      run()
+    }, DEBOUNCE_DURATION)
+  }
 
   function init() {
-    window.addEventListener('resize', () => {
-      if(debouncer) return
-      debouncer = setTimeout(() => {
-        debouncer = null
-        run()
-      }, DEBOUNCE_DURATION)
-    })
+    atomique_log('initializing')
+    window.addEventListener('resize', debounceHandler)
+    window.addEventListener('scroll', debounceHandler)
 
     run()
   }
@@ -74,12 +96,23 @@ function atomique (opts = {}) {
     }
     let hostRect = hostElement.getBoundingClientRect()
 
-    let hostZIndex = hostElement.style.zIndex
+    let hostZIndex
+    if (window.getComputedStyle) {
+      hostZIndex = parseInt(document.defaultView.getComputedStyle(hostElement, null).getPropertyValue('z-index'));
+      if (isNaN(hostZIndex)) {
+        hostZIndex = parseInt(document.defaultView.getComputedStyle(hostElement, null).getPropertyValue('zIndex'));
+      }
+    } else if (hostElement.currentStyle) {
+      hostZIndex = parseInt(hostElement.currentStyle['z-index']);
+      if (isNaN(hostZIndex)) {
+        hostZIndex = parseInt(hostElement.currentStyle['zIndex']);
+      }
+    }
+    if (isNaN(hostZIndex)) hostZIndex = 0
     
     return {
-      x: hostRect.left - (hostRect.width * 0.2),
-      y: hostRect.top - (hostRect.height * 0.25),
-      width: hostRect.width * 1.4,
+      hostRect,
+      width: hostRect.width * 1.2,
       height: hostRect.height * 1.4,
       hostZIndex
     }
@@ -87,6 +120,7 @@ function atomique (opts = {}) {
 
   // Resets elements based on new position and size info, and returns info on new properties
   function reset() {
+    atomique_log('reset')
     // Clear existing SVG elements
     let existing = document.getElementById(`atomique-upper-${HOST_ELEMENT_ID}`)
     if (existing !== null) {
@@ -100,21 +134,25 @@ function atomique (opts = {}) {
     // Determine the dimensions and position of the effect host/target
     let hostData = getHostData()
     if (hostData === null) return null
-    let x = hostData.x
-    let y = hostData.y
-    let width = hostData.width
-    let height = hostData.height
+
+    let hostRect = hostData.hostRect
+    let x = hostRect.left - (hostRect.width * 0.1)
+    let y = hostRect.top - (hostRect.height * 0.25)
+    let width = hostRect.width
+    let height = hostRect.height
     let hostZIndex = hostData.hostZIndex
 
-    rightMostX = width - (DOT_SIZE_MINIMUM + DOT_SIZE_VARIANCE)
+    atomique_log(`x ${x}`)
+    atomique_log(`y ${y}`)
+
     latestReset = new Date().getTime() / 1000
     
     // Build up new HTML elements (div) to contain the actual effect
     let containerUpper = document.createElement('div')
-    containerUpper.style.left = x
-    containerUpper.style.top = y
-    containerUpper.style.width = width
-    containerUpper.style.height = height
+    containerUpper.style.left = `${x}px`
+    containerUpper.style.top = `${y}px`
+    containerUpper.style.width = `${width}px`
+    containerUpper.style.height = `${height}px`
     containerUpper.style.overflow = 'visible'
     containerUpper.style.padding = '0'
     containerUpper.style.pointerEvents = 'none'
@@ -122,11 +160,13 @@ function atomique (opts = {}) {
     containerUpper.style.zIndex = hostZIndex + 1
     containerUpper.id = `atomique-upper-${HOST_ELEMENT_ID}`
 
+    atomique_log(`containerUpper z ${containerUpper.style.zIndex}`)
+
     let containerLower = document.createElement('div')
-    containerLower.style.left = x
-    containerLower.style.top = y
-    containerLower.style.width = width
-    containerLower.style.height = height
+    containerLower.style.left = `${x}px`
+    containerLower.style.top = `${y}px`
+    containerLower.style.width = `${width}px`
+    containerLower.style.height = `${height}px`
     containerLower.style.overflow = 'visible'
     containerLower.style.padding = '0'
     containerLower.style.pointerEvents = 'none'
@@ -134,6 +174,8 @@ function atomique (opts = {}) {
     containerLower.style.zIndex = hostZIndex - 1
     containerLower.id = `atomique-lower-${HOST_ELEMENT_ID}`
     
+    atomique_log(`containerLower z ${containerLower.style.zIndex}`)
+
     // Append the new elements to the DOM
     document.getElementsByTagName('body')[0].appendChild(containerUpper)
     document.getElementsByTagName('body')[0].appendChild(containerLower)
@@ -155,16 +197,23 @@ function atomique (opts = {}) {
   }
 
   function run() {
+    atomique_log('running')
     if(debouncer) return
-    
+
+    // get host element data
     let hostRect = reset()
-    if (hostRect === null) return null
+    if (hostRect === null) {
+      atomique_log('unable to define host rect')
+      return null
+    }
     let height = hostRect.height
-    
+
+    // set up all the dots
     const dotSpacing = (height / DOT_COUNT)
     let rects = []
     let y = height * 0.1
 
+    // add the dots (rects) to canvas
     while(y <= height * 0.9) {
       const dotSize = Math.floor(Math.random() * DOT_SIZE_VARIANCE + DOT_SIZE_MINIMUM)
       let r = canvasUpper.rect(dotSize, dotSize)
@@ -175,10 +224,11 @@ function atomique (opts = {}) {
     }
 
     rects.forEach(r => {
-      
       // lor: left or right
       let lor = coinToss()
 
+      const host = document.getElementById(HOST_ELEMENT_ID)
+      rightMostX = (host.getBoundingClientRect().width * 1.2) - (DOT_SIZE_MINIMUM + DOT_SIZE_VARIANCE)
       let startX = lor ? 0 : rightMostX
       let endX = lor ? rightMostX : 0
 

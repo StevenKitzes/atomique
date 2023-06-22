@@ -28,17 +28,21 @@ The `atomique()` command gets the effect started with a bunch of defaults.  But 
 
 You can, of course, include one or more properties in this way.  Atomique doesn't do a lot of hand-holding, so you can try some pretty gnarly stuff just to see what happens.  In the worst case, you'll get something ugly (or surprisingly pretty), or in some instances Atomique will take over with default values if you get too wild.  (For example, the string `llama` will not work as a duration no matter how hard Atomique tries.)
 
-Let's look at all the things you can do with the Atomique effect.
+Let's look at all the things you can do with the Atomique API.
 
 ### Host Element ID
 
     { hostElementId: String }
     
-Specify the element you want to host the effect by passing the element's `id` attribute to the `hostElementId` property, like this:
+Specify the element you want to host the effect by passing the HTML element's `id` attribute value to the `hostElementId` property, like this:
 
     atomique({ hostElementId: 'myElement' })
 
-Note that Atomique does *not* expect a selector; it only works on a single element by its `id`, so just pass the `id` as a string without the `#` symbol.
+#### NOTES:
+
+- Atomique does *not* expect a selector; it only works on a single element by its `id`, so just pass the `id` as a string without the `#` symbol.
+- The HTML element that plays host to the Atomique effect _must_ be a positioned element.  This is due to limitations in browsers' ability to interpret z-index values.  For more information, check out [MDN's docs on z-index here](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index?utm_source=devtools&utm_medium=inspector-inactive-css).
+
 
 ### Colors
 
@@ -124,6 +128,14 @@ Atomique accepts stupid stuff like negative durations.  The result is ... not gr
 I accidentally created a feature at some point that ensures all particles are the same color when they are on the same side of the element.  In other words, if you pick blue and red, *all* particles will be blue when orbiting on the left side of the element, and *all* will be red when on the right.  I liked the effect in some cases, so kept the `colorUniformity` feature as an option:
 
     atomique({ colorUniformity: true })
+
+### Performance
+
+    { debounceTime: Number }
+
+SVG animations are not cheap for a browser to run.  Adding a large number of dots to the Atomique effect can cause performance degradation.  (If you go crazy with it, I can guarantee it will cause performance degradation.)  Re-calculating and setting up the effect is also expensive.  Since the effect runs in a canvas, any change to the rendered DOM layout/styles can cause the entire effect to go through initialization from scratch - a very intensive process - because the effect's canvas(es) need to follow the shape/position of their host HTML element.  Oof!
+
+To alleviate the performance ramifications of reinitializing the effect every time the browser encounters a scroll or layout update, a debouncer was implemented.  In short, if you resize the window, Atomique will wait a bit to see if you _continue_ resizing.  If you scroll, it'll wait a bit to see if you _continue_ scrolling.  If you do continue, it will wait some more, until you stop changing the scroll/layout of the page.  Then, once it's convinced you're done, it will reinitialize the Atomique effect.  The `debounceTime` is the amount of time Atomique will wait to see if you continue performing page updates that would cause Atomique to reinitialize.
 
 ## Ideas for Improvement
 
