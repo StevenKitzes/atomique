@@ -4,9 +4,9 @@
 
 ## Getting Started
 
-Currently, this is a bare-bones JavaScript library that you can include on your HTML page using `<script>` tags.  For the moment, you will also need to include the [SVG.js](https://svgjs.com/) `svg.min.js` file included in this repository as an additional dependency.  `svg.min.js` and `atomique.js` are all you need to get started.
+Currently, this is a bare-bones JavaScript library that you can include on your HTML page using `<script>` tags.  For the moment, you will also need to include the [SVG.js](https://svgjs.dev/docs/3.0/) `svg.min.js` file included in this repository as an additional dependency.  `svg.min.js` and `atomique.js` are all you need to get started.
 
-Included in this repository is a sample HTML page demonstrating the most basic way to get Atomique working on your page.  Refer to `index.html` as a guide, and see it in action [here](https://stevenkitzes.github.com/atomique).
+Included in this repository is a sample HTML page demonstrating the most basic way to get Atomique working on your page.  Refer to `index.html` as a guide, and see it in action [here](https://stevenkitzes.github.io/atomique).
 
 The following snippet will get you started.  This will include the required files on your page, and start the Atomique effect.  By default, the effect will be applied to the element on your page with the `id` attribute "example".
 
